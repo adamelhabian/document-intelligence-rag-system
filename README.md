@@ -72,3 +72,9 @@ Once activated, `(.venv)` should appear at the beginning of your terminal prompt
    ```
 
    Replace `your_api_key_here` with your actual OpenAI API key.
+
+## Run the FastAPI server
+
+```bash
+$ uvicorn main:app --reload --host 0.0.0.0
+```
