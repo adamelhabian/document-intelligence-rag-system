@@ -51,6 +51,24 @@ python -m venv .venv
 
 Once activated, `(.venv)` should appear at the beginning of your terminal prompt.
 
-## License
+## Installation
 
-No license has been selected yet.
+1. Install the required dependencies:
+
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+2. Create your `.env` file:
+
+   ```bash
+   cp .env.example .env
+   ```
+
+3. Configure your environment variables in `.env`:
+
+   ```env
+   OPENAI_API_KEY=your_api_key_here
+   ```
+
+   Replace `your_api_key_here` with your actual OpenAI API key.
