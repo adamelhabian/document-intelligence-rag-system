@@ -1,20 +1,21 @@
-from pydantic import BaseModel,Field,validator
+
+from pydantic import BaseModel, Field, ConfigDict, field_validator
 from typing import Optional
-from bson.objectid import ObjectId # It allows you to convert a string ID into a MongoDB ObjectId
-# bson -> binary json
+from bson import ObjectId
 
 
 class Project(BaseModel):
-    _id: Optional[ObjectId] # document unique identifier
-    project_id: str = Field(...,min_length=1)
+    model_config = ConfigDict(
+        arbitrary_types_allowed=True,
+        populate_by_name=True
+    )
 
-    # design custom validation
-    @validator('project_id')
-    def validate_project_id(cls,value):
+    id: Optional[ObjectId] = Field(default=None, alias="_id")
+    project_id: str = Field(..., min_length=1)
+
+    @field_validator("project_id")
+    @classmethod
+    def validate_project_id(cls, value: str) -> str:
         if not value.isalnum():
-            raise ValueError("project id must be alphanumeric")
+            raise ValueError("Project ID must be alphanumeric")
         return value
-
-
-    class Config:
-        aribtrary_types_allowed=True
