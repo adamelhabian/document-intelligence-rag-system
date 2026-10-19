@@ -1,19 +1,22 @@
-from pydantic import BaseModel,Field,validator
+from pydantic import BaseModel,Field,validator,ConfigDict
 from typing import Optional
 from bson.objectid import ObjectId
 
 
 
 class DataChunk(BaseModel):
+    model_config = ConfigDict(arbitrary_types_allowed=True)
 
-    _id: Optional[ObjectId] # document unique identifier
+    id: Optional[ObjectId] = Field(None,alias='_id') # document unique identifier
     chunk_text: str = Field(...,min_length=1)
     chunk_metadata: dict
     chunk_order: int = Field(...,gt=0)
     chunk_project_id: ObjectId
+    
 
 
 
-
-    class Config:
-            aribtrary_types_allowed=True
+# # The Config class is used to customize how Pydantic validates and handles your model
+#     class Config:
+#             aribitrary_types_allowed=True
+#             # Allows Pydantic to accept custom types, such as MongoDB's ObjectId, without requiring them to be standard types like str, int, or dict
