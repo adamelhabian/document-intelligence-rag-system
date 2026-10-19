@@ -39,10 +39,12 @@ async def upload_data(project_id:str,file:UploadFile,app_settings:Settings=Depen
 # the efficient way file cut to chunks once each chunk complete put in the target folder
 
     project_dir_path=ProjectController().get_project_path(project_id=project_id)
-    file_path=data_controller.generate_unique_filename(org_file_name=file.filename,project_id=project_id)
+    file_path,file_id=data_controller.generate_unique_filepath(org_file_name=file.filename,project_id=project_id)
 
     try:
         async with aiofiles.open(file_path,'wb') as f :
+            # The operator := is called the walrus operator 
+            # assigns a value to a variable and evaluates to that value in the same expression
             while chunk:= await file.read(app_settings.FILE_DEFAULT_CHUNK_SIZE):
                 await f.write(chunk)
     except Exception as e:
@@ -56,7 +58,8 @@ async def upload_data(project_id:str,file:UploadFile,app_settings:Settings=Depen
 
     return JSONResponse(
         content={
-            "signal":ResponseSignal.FILE_UPLOAD_SUCCESS.value
+            "signal":ResponseSignal.FILE_UPLOAD_SUCCESS.value,
+            "file_id":file_id
         }
     )
         
