@@ -1,0 +1,58 @@
+services:
+  mongodb:
+    image: mongo:7.0-jammy
+
+    container_name: mongodb
+
+    ports:
+      - "27007:27017"
+
+    volumes:
+      - ./mongodb:/data/db
+
+    networks:
+      - backend
+
+    restart: always
+
+networks:
+  backend:
+
+# What is a service?
+# A service describes an application or component that Docker Compose should run
+# They could represent:
+# - mongodb: The database.
+# - backend: Your FastAPI application.
+# - frontend: Your website.
+# The name mongodb is a name you choose for this service. It is not a special Docker keyword.
+
+# ```yaml
+# services:
+#   # Defines the MongoDB service
+#   mongodb:
+#     # Specifies the MongoDB image and version to use
+#     A MongoDB image is a ready-made package containing everything Docker needs to create and run a MongoDB container
+#     image: mongo:7.0-jammy
+
+#     # Sets a custom name for the running container
+#     container_name: mongodb
+
+#     # Maps port 27007 on my computer to port 27017 inside the container
+#     ports:
+#       - "27007:27017"
+
+#     # Stores MongoDB data in a local folder to preserve it when the container is removed
+#     volumes:
+#       - ./mongodb:/data/db
+
+#     # Connects MongoDB to the backend network
+#     networks:
+#       - backend
+
+#     # Automatically restarts the container if it stops unexpectedly
+#     restart: always
+
+# # Defines a network for communication between containers
+# networks:
+#   backend:
+# ```

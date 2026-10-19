@@ -14,6 +14,10 @@ class Settings(BaseSettings):
     FILE_ALLOWED_EXTENSIONS: list[str] = ["text/plain", "application/pdf"]
     FILE_MAX_SIZE:int=10
 
+    MONGODB_URL: str
+    MONGODB_DATABASE :str
+    
+
     #This tells Pydantic Settings to read configuration values from a file named .env
     class Config:
         env_file=".env"
