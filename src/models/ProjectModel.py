@@ -38,7 +38,7 @@ class ProjectModel(BaseDataModel):
 
         # project.model_dump() : Converts the Pydantic model into a Python dictionary
         result=await self.collection.insert_one(project.model_dump(by_alias=True,exclude_unset=True))
-        project._id=result.inserted_id
+        project.id=result.inserted_id
 
         return project
 
