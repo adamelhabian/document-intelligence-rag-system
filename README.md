@@ -78,3 +78,12 @@ Once activated, `(.venv)` should appear at the beginning of your terminal prompt
 ```bash
 $ uvicorn main:app --reload --host 0.0.0.0
 ```
+
+## Run Docker Compose Services
+
+```bash
+$ cd docker
+$ sudo docker compose up -d
+```
+
+- update `.env` with your credentials
