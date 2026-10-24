@@ -4,6 +4,63 @@ from openai import OpenAI
 import logging
 from ..LLMEnums import OpenAIEnums
 
+# The complete text generation flow                                      
+# Create OpenAIProvider object
+#           |
+#           v
+#        __init__()
+#           |
+#           v
+# set_generation_model(model_id)
+#           |
+#           v
+# generate_text(prompt, chat_history)
+#           |
+#           v
+# Validate client and model
+#           |
+#           v
+# Set generation parameters
+#           |
+#           v
+# construct_prompt(prompt, role)
+#           |
+#           v
+# process_text(prompt)
+#           |
+#           v
+# Construct user message
+#           |
+#           v
+# Append message to chat_history
+#           |
+#           v
+# Call OpenAI Chat Completions API
+#           |
+#           v
+# Validate response
+#           |
+#           v
+# Return generated answer
+
+# Embedding flow
+# set_embedding_model()
+#           |
+#           v
+#       embed_text()
+#           |
+#           v
+# Validate client and model
+#           |
+#           v
+# Call Embeddings API
+#           |
+#           v
+# Receive embedding vector
+#           |
+#           v
+# Return vector
+
 
 class OpenAIProvider(LLMInterface):
     # api key for connection
