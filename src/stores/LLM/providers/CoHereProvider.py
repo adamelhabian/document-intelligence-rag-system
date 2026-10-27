@@ -97,3 +97,5 @@ class CoHereProvider(LLMInterface):
             "role": role,
             "text": self.process_text(prompt)
         }
+
+

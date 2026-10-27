@@ -1,7 +1,7 @@
 from .LLMEnums import LLMEnums
-from providers.OpenAiProvider import OpenAIProvider
-from providers.CoHereProvider import CoHereProvider
-from providers.GeminiProvider import GeminiProvider
+from stores.LLM.providers import OpenAIProvider
+from stores.LLM.providers import CoHereProvider
+from stores.LLM.providers import GeminiProvider
 
 
 class LLMProviderFactory:

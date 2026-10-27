@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from dotenv import load_dotenv
-from routes import base,data
+from routes import base,data,nlp
 from motor.motor_asyncio import AsyncIOMotorClient # class that allows Python to connect to MongoDB asynchronously
 from helpers.config import get_settings
 from stores.LLM.LLMProviderFactory import LLMProviderFactory
@@ -49,6 +49,7 @@ async def shutdown_db_client():
 
 app.include_router(base.base_router)
 app.include_router(data.data_router)
+app.include_router(nlp.nlp_router)
 
 
 
