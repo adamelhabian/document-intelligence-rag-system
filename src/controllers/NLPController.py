@@ -4,15 +4,17 @@ from stores.LLM.LLMEnums import DocumentTypeEnum
 from typing import List
 import json
 
+
 class NLPController(BaseController):
 
     def __init__(self, vectordb_client, generation_client, 
-                 embedding_client):
+                 embedding_client,template_parser):
         super().__init__()
 
         self.vectordb_client = vectordb_client
         self.generation_client = generation_client
         self.embedding_client = embedding_client
+        self.template_parser=template_parser
         
 
     def create_collection_name(self, project_id: str):
@@ -101,7 +103,7 @@ class NLPController(BaseController):
 
         # step2: get text embedding vector
         vector = self.embedding_client.embed_text(text=text, 
-                                                 document_type=DocumentTypeEnum.QUERY.value)
+                                                document_type=DocumentTypeEnum.QUERY.value)
 
         if not vector or len(vector) == 0:
             return False

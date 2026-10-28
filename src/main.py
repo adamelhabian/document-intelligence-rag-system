@@ -5,7 +5,7 @@ from motor.motor_asyncio import AsyncIOMotorClient # class that allows Python to
 from helpers.config import get_settings
 from stores.LLM.LLMProviderFactory import LLMProviderFactory
 from stores.vectordb.VectorDBProviderFactory import VectorDBProviderFactory
-
+from stores.LLM.templates.template_parser import TemplateParser
 
 
 app=FastAPI()
@@ -36,6 +36,8 @@ async def startup_db_client():
     app.vectordb_client=vectordb_provider_factory.create(provider=settings.VECTOR_DB_BACKEND)
 
     app.vectordb_client.connect()
+    app.template_parser=TemplateParser(language=settings.PRIMARY_LANG,
+                                       default_language=settings.DEFAULT_LANG)
 
     
 
