@@ -3,6 +3,7 @@ import logging
 from ..VectorDBEnums import DistanceMethodEnums
 from qdrant_client import models,QdrantClient
 from typing import List
+from models.db_shemes import RetrievedDocument
 
 
 class QdrantDBProvider(VectorDBInterface):
@@ -62,80 +63,137 @@ class QdrantDBProvider(VectorDBInterface):
         
         return False
 
-    def insert_one(self, collection_name: str, text: str, vector: list,
-                        metadata: dict = None, 
-                        record_id: str = None):
         
+    def insert_one(
+        self,
+        collection_name: str,
+        text: str,
+        vector: list,
+        metadata: dict = None,
+        record_id: str = None,
+    ):
         if not self.is_collection_existed(collection_name):
-            self.logger.error(f"Can not insert new record to non-existed collection: {collection_name}")
+            self.logger.error(
+                f"Collection does not exist: {collection_name}"
+            )
             return False
-        
+
         try:
-            _ = self.client.upload_records(
+            point_id = record_id if record_id is not None else 0
+
+            self.client.upsert(
                 collection_name=collection_name,
-                # this function help me record one or more record
-                records=[
-                    models.Record(
+                points=[
+                    models.PointStruct(
+                        id=point_id,
                         vector=vector,
                         payload={
-                            "text": text, "metadata": metadata
-                        }
+                            "text": text,
+                            "metadata": metadata,
+                        },
                     )
-                ]
+                ],
+                wait=True,
             )
+            return True
+
         except Exception as e:
-            self.logger.error(f"Error while inserting batch: {e}")
+            self.logger.exception(f"Error inserting record: {e}")
             return False
 
-        return True
 
-    def insert_many(self, collection_name: str, texts: list, 
-                        vectors: list, metadata: list = None, 
-                        record_ids: list = None, batch_size: int = 50):
-        # batch_size as how many records you send to Qdrant in one request,
-        
+    def insert_many(
+        self,
+        collection_name: str,
+        texts: list,
+        vectors: list,
+        metadata: list = None,
+        record_ids: list = None,
+        batch_size: int = 50,
+    ):
+        if not self.is_collection_existed(collection_name):
+            self.logger.error(
+                f"Collection does not exist: {collection_name}"
+            )
+            return False
+
+        if len(texts) != len(vectors):
+            self.logger.error("Texts and vectors lengths do not match")
+            return False
+
         if metadata is None:
             metadata = [None] * len(texts)
 
         if record_ids is None:
-            record_ids = [None] * len(texts)
+            record_ids = list(range(len(texts)))
 
-        for i in range(0, len(texts), batch_size):
-            batch_end = i + batch_size
+        if not (
+            len(texts) == len(metadata) == len(record_ids)
+        ):
+            self.logger.error("Texts, metadata, and IDs lengths do not match")
+            return False
 
+        try:
+            for i in range(0, len(texts), batch_size):
+                end = min(i + batch_size, len(texts))
 
-            batch_texts = texts[i:batch_end]
-            batch_vectors = vectors[i:batch_end]
-            batch_metadata = metadata[i:batch_end]
+                batch_records = [
+                    models.PointStruct(
+                        id=record_ids[j],
+                        vector=vectors[j],
+                        payload={
+                            "text": texts[j],
+                            "metadata": metadata[j],
+                        },
+                    )
+                    for j in range(i, end)
+                ]
 
-            batch_records = [
-                models.Record(
-                    vector=batch_vectors[x],
-                    payload={
-                        "text": batch_texts[x], "metadata": batch_metadata[x]
-                    }
-                )
-
-                for x in range(len(batch_texts))
-            ]
-
-            try:
-                _ = self.client.upload_records(
+                self.client.upsert(
                     collection_name=collection_name,
-                    records=batch_records,
+                    points=batch_records,
+                    wait=True,
                 )
-            except Exception as e:
-                self.logger.error(f"Error while inserting batch: {e}")
-                return False
 
-        return True
+            return True
+
+        except Exception as e:
+            self.logger.exception(f"Error while inserting batch: {e}")
+            return False
+
+
+    
+
+    def debug_collection(self, collection_name: str):
+        info = self.client.get_collection(
+            collection_name=collection_name
+        )
+
+        print("Collection:", collection_name)
+        print("Points count:", info.points_count)
+        print("Vector config:", info.config.params.vectors)
+
     def search_by_vector(self, collection_name: str, vector: list, limit: int = 5):
 
-        return self.client.search(
+        results= self.client.query_points(
             collection_name=collection_name,
-            query_vector=vector,
-            limit=limit
-        )
+            query=vector,
+            limit=limit,
+            
+        ).points
+        if not results :
+            return None
+
+        return [
+            RetrievedDocument(**{
+                "score":result.score,
+                "text":result.payload["text"]
+
+            })
+            for result in results
+        ]
+
+        
     
     
 

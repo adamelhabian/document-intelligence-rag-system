@@ -36,6 +36,9 @@ class Settings(BaseSettings):
     VECTOR_DB_BACKEND: str
     VECTOR_DB_PATH: str
     VECTOR_DB_DISTANCE_METHOD: str = None
+
+    PRIMARY_LANG :str
+    DEFAULT_LANG :str
     
 
     #This tells Pydantic Settings to read configuration values from a file named .env
