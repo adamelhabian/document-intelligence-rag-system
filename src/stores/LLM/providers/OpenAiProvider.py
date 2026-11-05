@@ -79,13 +79,14 @@ class OpenAIProvider(LLMInterface):
         self.default_generation_temperature = default_generation_temperature
 
         self.generation_model_id = None
+        self.enums=OpenAIEnums
 
         self.embedding_model_id = None
         self.embedding_size = None
 
         self.client = OpenAI(
             api_key = self.api_key,
-            api_url = self.api_url
+            base_url=self.api_url
         )
 
         # log messages help you understand what your application is doing while it runs
@@ -135,7 +136,7 @@ class OpenAIProvider(LLMInterface):
         if not response or not response.choices or len(response.choices)==0 or not response.choices[0].message:
             self.logger.error("Error while generating text with OpenAI")
             return None
-        return response.choices[0].message["content"]
+        return response.choices[0].message.content
 
 
 
